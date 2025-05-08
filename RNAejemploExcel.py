@@ -1,7 +1,7 @@
 import pandas as pd #para maniipular entradas de datos como datasets
 from pandas import DataFrame # Para utilizar el metodo DataFrame del modulo Pandas
 from keras.models import Sequential # para hacer el modelo de la red neuronal
-from keras.layers import Dense # para manejar la cantudad de capas y de neuronas
+from keras.layers import Dense # para manejar la cantidad de capas y de neuronas
 import numpy as np # libreria o modulo para manipulacion de fechas y numeros
 from sklearn.model_selection import train_test_split # dividir datos y crean conjuntos de datos de training y testing
 from sklearn.preprocessing import StandardScaler # para escalar datos numericos a datos decimales
@@ -61,15 +61,15 @@ print(y1_test, y2_test, y3_test, y4_test)
 
 
 model = Sequential()
-model.add(Dense(12, input_dim=4, activation='relu'))
-model.add(Dense(8, activation='relu'))
-model.add(Dense(1, activation='sigmoid'))
+model.add(Dense(12, input_dim=4, activation='relu')) # capa de entrada
+model.add(Dense(8, activation='relu')) #capa oculta
+model.add(Dense(1, activation='sigmoid')) # capa de salida
 
 
 # Compilar y ajustar el modelo
 model.compile(loss='mse', optimizer='adam', metrics=['mse'])
 
-history = model.fit(X_train, y2_train, epochs=150, batch_size=10, validation_split=0.2, verbose=0)
+history = model.fit(X_train, y2_train, epochs=150, batch_size=10, validation_split=0.2, verbose=0) # entrenamiento de la red neuronal
 
 y2_pred = model.predict(X_test)
 

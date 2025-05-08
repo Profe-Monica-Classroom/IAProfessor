@@ -1,5 +1,5 @@
 import pandas as pd #use pandas to from excel file
-import tensorflow as tf
+import tensorflow as tf #use tensorflow
 from tensorflow.keras.models import Sequential #use Sequential model
 from tensorflow.keras.layers import Dense #use Dense layer
 
@@ -37,8 +37,8 @@ def main():
     country_names, country_numbers = preprocess_data(df)
     
     # Convert country numbers to a numpy array
-    X = tf.constant(country_numbers, dtype=tf.float32)
-    y = tf.constant(country_numbers, dtype=tf.float32)
+    X = tf.constant(country_numbers, dtype=tf.float32) # Convert the country numbers to a tensor
+    y = tf.constant(country_numbers, dtype=tf.float32) # Convert the country numbers to a tensor
     
     model = build_model(input_dim=1)
     
