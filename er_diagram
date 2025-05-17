@@ -1,0 +1,12 @@
+digraph ER {
+	Employees [label="employees
+(id, first_name, last_name, date_of_birth)"]
+	Departments [label="departments
+(department_id, department_name)"]
+	Works_in [label="works_in
+(employee_id, department_id)"]
+	Employees -> Works_in [label=1 arrowhead=none]
+	Works_in -> Employees [label=N arrowhead=normal]
+	Departments -> Works_in [label=1 arrowhead=none]
+	Works_in -> Departments [label=N arrowhead=normal]
+}

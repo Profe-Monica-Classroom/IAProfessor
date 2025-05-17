@@ -1,0 +1,96 @@
+[
+    {
+	"stars": 7.5,
+	"title": "Quiz Show",
+	"rating": "PG-13",
+	"duration": 133,
+	"actors": [
+	    "Ralph Fiennes",
+	    "John Turturro",
+	    "Rob Morrow"
+	]
+    },
+    {
+	"stars": 7.6,
+	"title": "Batman",
+	"rating": "PG-13",
+	"genre": "Action",
+	"duration": 126,
+	"actors": [
+	    "Michael Keaton",
+	    "Jack Nicholson",
+	    "Kim Basinger"
+	]
+    },
+    {
+	"stars": 8.2,
+	"title": "The Wolf of Wall Street",
+	"rating": "R",
+	"genre": "Biography",
+	"duration": 180,
+	"actors": [
+	    "Leonardo DiCaprio",
+	    "Jonah Hill",
+	    "Margot Robbie"
+	]
+    },
+     {
+    "stars": 8.1,
+    "title": "Jaws",
+    "rating": "PG",
+    "genre": "Drama",
+    "duration": 124,
+    "actors": [
+      "Roy Scheider",
+      "Robert Shaw",
+      "Richard Dreyfuss"
+    ]
+     },
+      {
+    "stars": 7.8,
+    "title": "Belle de Jour",
+    "genre": "Drama",
+    "duration": 101,
+    "actors": [
+      "Catherine Deneuve",
+      "Jean Sorel",
+      "Michel Piccoli"
+    ]
+      },
+      {
+    "stars": 7.8,
+    "title": "As Good as It Gets",
+    "rating": "PG-13",
+    "genre": "Comedy",
+    "duration": 139,
+    "actors": [
+      "Jack Nicholson",
+      "Helen Hunt",
+      "Greg Kinnear"
+    ]
+  },
+  {
+    "stars": 8.4,
+    "title": "Toy Story 3",
+    "rating": "G",
+    "genre": "Animation",
+    "duration": 103,
+    "actors": [
+      "Tom Hanks",
+      "Tim Allen",
+      "Joan Cusack"
+    ]
+  },
+  {
+    "stars": 7.4,
+    "title": "Manhattan Murder Mystery",
+    "rating": "PG",
+    "genre": "Comedy",
+    "duration": 104,
+    "actors": [
+      "Woody Allen",
+      "Diane Keaton",
+      "Jerry Adler"
+    ]
+  }
+]
