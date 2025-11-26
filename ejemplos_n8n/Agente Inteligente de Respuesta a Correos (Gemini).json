@@ -1,0 +1,513 @@
+{
+  "name": "Agente Inteligente de Respuesta a Correos (Gemini)",
+  "nodes": [
+    {
+      "parameters": {
+        "chatId": "5555555",
+        "text": "={{ $json.Nombre }} te ha enviado un nuevo mensaje: {{ $json.Mensaje }}. Su email es: {{ $json.email }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1904,
+        -560
+      ],
+      "id": "a639ec7e-46e0-4dbe-8c63-1e1e780f48d2",
+      "name": "Enviar mensaje a UsuarioX",
+      "webhookId": "228d98c6-2c55-4db4-8599-d03db4e77314",
+      "credentials": {
+        "telegramApi": {
+          "id": "P48nGnpgmLWxFvpr",
+          "name": "Telegram account"
+        }
+      },
+      "notes": "Envio de mensajes sobre un asunto especifico"
+    },
+    {
+      "parameters": {
+        "chatId": "757740591",
+        "text": "=Tu agente AI generó este mensaje: {{ $json.content.parts[0].text }}\n\nEstás de acuerdo con esta respuesta para enviarla: Si o No?",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1232,
+        -400
+      ],
+      "id": "36981504-53ab-481c-b2ba-284e83ef4f88",
+      "name": "Mensajes del Agente Gemini",
+      "webhookId": "228d98c6-2c55-4db4-8599-d03db4e77314",
+      "credentials": {
+        "telegramApi": {
+          "id": "P48nGnpgmLWxFvpr",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Analice el siguiente mensaje: {{ $json.Mensaje }} y prepare una respuesta según su contenido, para que sea enviada por email a su remitente. El remitente es: {{ $json.Nombre }} y su correo es: {{ $json.email }}. Debes crear respuestas cortas que no superen los 2000 caracteres y debes escribir el mensaje, sin explicar como debe escribirse, solo debes crearlo. Es decir la salida de tu prompt no debe exceder los 2000 caracteres. Incluye en la salida los campos Remitente: {{ $json.email }} y Nombre: {{ $json.Nombre }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        880,
+        -400
+      ],
+      "id": "69cce024-f547-459a-a739-ac543f6e5425",
+      "name": "Message a model",
+      "notesInFlow": true,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "2w90YaiPoAmRsZmf",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      },
+      "notes": "Agente Gemini"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        736,
+        -176
+      ],
+      "id": "3c49c290-d7d0-477b-b97c-4f7eff2ec7c4",
+      "name": "Telegram Trigger",
+      "webhookId": "782348f5-ab04-4e75-9291-083f48eb53cb",
+      "alwaysOutputData": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "P48nGnpgmLWxFvpr",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "bd84ee31-76e2-4e87-8353-7394590d5017",
+              "leftValue": "={{ $json.message.text }}",
+              "rightValue": "SI",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "609e0f3d-0f19-4372-a12d-c362d0e85031",
+              "leftValue": "={{ $json.message.text }}",
+              "rightValue": "Si",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1024,
+        -176
+      ],
+      "id": "860d4ffb-9e6d-4456-88f1-c886e3cb9f5b",
+      "name": "If1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1456,
+        -352
+      ],
+      "id": "cb841732-008c-4ab9-848f-f10b46af4e6d",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.toEmail }}",
+        "subject": "={{ $json.subject }}",
+        "emailType": "text",
+        "message": "={{ $json.bodyText }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1904,
+        -352
+      ],
+      "id": "02be1ba0-a612-4f89-bce4-fb80bcc69b78",
+      "name": "Send a message",
+      "webhookId": "72d6166f-abe8-42d9-8261-daf85e1a35c0",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "hgCf3TBVB1WtbKqn",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const telegramMessage = $input.first().json.result.text;\n\n// --- 1. Extraer Email (Destinatario) ---\n// Busca \"Remitente: [correo]\" y captura el correo.\nconst emailMatch = telegramMessage.match(/Remitente: (.*?)\\n/);\nconst toEmail = emailMatch ? emailMatch[1].trim() : 'correo_no_encontrado@error.com';\n\n// --- 2. Extraer Asunto ---\n// Busca \"Asunto: [asunto]\" y captura el texto.\nconst subjectMatch = telegramMessage.match(/Asunto: (.*?)\\n/);\nlet subject = subjectMatch ? subjectMatch[1].trim() : 'Respuesta Automática';\n\n// Añade \"Re: \" al asunto si no lo tiene.\nif (!subject.toLowerCase().startsWith('re:')) {\n    subject = 'Re: ' + subject;\n}\n\n// --- 3. Extraer Cuerpo (La Respuesta Generada por Gemini) ---\n// Encuentra el inicio del cuerpo (después de la línea de Asunto)\nconst bodyStartMarker = telegramMessage.indexOf(\"\\n\\nEstimada\"); // Busca el inicio del saludo\nconst bodyEndMarker = telegramMessage.indexOf(\"Estás de acuerdo con esta respuesta para enviarla:\"); // Busca el final del mensaje\nconst bodySignMarker = telegramMessage.indexOf(\"\\nTu Nombre o(.*?)\\n/\"); // Busca la frase despues de Saludos Cordiales\n\nlet bodyText = 'Error al parsear el cuerpo del mensaje.';\n\nif (bodyStartMarker !== -1 && bodyEndMarker !== -1 && bodyEndMarker > bodyStartMarker) {\n    // Extrae el contenido entre el saludo y la pregunta de confirmación\n    bodyText = telegramMessage.substring(bodyStartMarker, bodyEndMarker);\n}\n\n// Limpia el cuerpo: elimina los saltos de línea iniciales y finales.\nbodyText = bodyText.trim().replace(/[\\r\\n]+/g, '\\n').trim();\n\n// --- 4. Crear el Nuevo Objeto de Salida ---\n\n// Creamos un formato HTML para el cuerpo del correo, reemplazando \\n por <br>\nconst bodyHtml = bodyText.replace(/\\n/g, '<br>');\n\n// Retorna el nuevo objeto con los campos listos\nreturn [\n    {\n        json: {\n            toEmail: toEmail,\n            subject: subject,\n            bodyHtml: bodyHtml,\n            bodyText: bodyText // Por si usas el modo texto\n        }\n    }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1680,
+        -352
+      ],
+      "id": "e6c62fee-f081-42b1-81f6-6d2b2deee0a5",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "chatId": "757740591",
+        "text": "Mensajes revisados por hoy ;-)",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2336,
+        -352
+      ],
+      "id": "53575084-452d-4fa4-8ff2-f8a0ad4574c5",
+      "name": "FIN",
+      "webhookId": "5b9f2ae2-cbd2-4c41-acec-61e215f49c00",
+      "credentials": {
+        "telegramApi": {
+          "id": "P48nGnpgmLWxFvpr",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        -496
+      ],
+      "id": "c4f5d6ad-dc7d-401c-aa33-68189eb1a0d2",
+      "name": "Ejemplo académico"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "643afe0a-a406-46f3-869e-55219f70fae5",
+              "name": "Nombre",
+              "value": "Monica Tahan",
+              "type": "string"
+            },
+            {
+              "id": "6c18f871-3d1d-4793-b2c9-d7fbb45155ad",
+              "name": "email",
+              "value": "mtahan@unexpo.edu.ve",
+              "type": "string"
+            },
+            {
+              "id": "3bb91c8d-89db-4dfd-b6a9-87ea0a084fd8",
+              "name": "Mensaje",
+              "value": "Clase de Inteligencia Artificial sobre agentes inteligentes, me gustaría participar",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        288,
+        -496
+      ],
+      "id": "a1592d61-d4c5-43bc-a845-4d22e8d0443b",
+      "name": "Datos de Prueba",
+      "notesInFlow": true,
+      "notes": "Datos para hacer demostración. Colocar aquí conector de gmail para lectura de bandejas"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "ddfc6a74-2fa2-4631-ac97-17d7073e54fa",
+              "leftValue": "={{ $json.Subject }}",
+              "rightValue": "Clase",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        608,
+        -496
+      ],
+      "id": "e9e173bc-5fed-47f6-88b3-260697e3e7d5",
+      "name": "Condicional para elegir acción"
+    },
+    {
+      "parameters": {
+        "operation": "get"
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2112,
+        -560
+      ],
+      "id": "ca1ac20e-4d99-45bb-9fab-59196fd97d2e",
+      "name": "Get a message",
+      "webhookId": "5374daa3-b591-4ced-9711-456dc233c3cb",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "hgCf3TBVB1WtbKqn",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "filters": {}
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        256,
+        -720
+      ],
+      "id": "958638c8-9467-4195-921f-6da962faa512",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "hgCf3TBVB1WtbKqn",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Mensajes del Agente Gemini",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mensajes del Agente Gemini": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "FIN",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar mensaje a Monica Tahan": {
+      "main": [
+        [
+          {
+            "node": "FIN",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        []
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "FIN",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ejemplo académico": {
+      "main": [
+        [
+          {
+            "node": "Datos de Prueba",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Datos de Prueba": {
+      "main": [
+        []
+      ]
+    },
+    "Condicional para elegir acción": {
+      "main": [
+        [
+          {
+            "node": "Enviar mensaje a Monica Tahan",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a message": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Condicional para elegir acción",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "133e975b-3c08-4efe-bae5-a71c3e8442c0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "683164925d361d7b964cf471386e9bb8e5229171b9a8ab641fc1b75e46d0656c"
+  },
+  "id": "octKHDD0AjHT1x7L",
+  "tags": []
+}

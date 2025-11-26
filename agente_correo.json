@@ -1,0 +1,85 @@
+{
+  "name": "Agente Inteligente de Respuesta a Correos (Gemini)",
+  "nodes": [
+    {
+      "parameters": {
+        "pollInterval": 5,
+        "mode": "recent",
+        "search": "UNSEEN",
+        "folder": "INBOX",
+        "options": {}
+      },
+      "name": "IMAP - Buzón de Entrada",
+      "type": "n8n-nodes-base.imap",
+      "typeVersion": 1,
+      "position": [
+        240,
+        340
+      ],
+      "credentials": {
+        "imap": "TU_CREDENTIAL_IMAP"
+      }
+    },
+    {
+      "parameters": {
+        "model": "gemini-2.5-flash",
+        "prompt": "Eres un asistente de IA amable y servicial para un profesor de mecatrónica. Tu tarea es leer el siguiente correo electrónico de un estudiante o colega y escribir una respuesta profesional y clara.\n\nContenido del Correo:\nAsunto: {{ $json.subject }}\nDe: {{ $json.from }}\nCuerpo: {{ $json.text }}\n\nRespuesta:",
+        "options": {
+          "temperature": 0.5,
+          "maxOutputTokens": 2048
+        }
+      },
+      "name": "Gemini - Generar Respuesta",
+      "type": "n8n-nodes-base.googleVertexAi",
+      "typeVersion": 1,
+      "position": [
+        540,
+        340
+      ],
+      "credentials": {
+        "googleVertexAi": "TU_CREDENTIAL_GEMINI_VERTEX_AI"
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "ia.mecatronica@tucorreo.com",
+        "toEmail": "={{ $json.from }}",
+        "subject": "Re: {{ $json.subject }}",
+        "html": "El mensaje original fue:\n\nAsunto: {{ $json.subject }}\nDe: {{ $json.from }}\nCuerpo: {{ $json.text }}\n\n---\n\nRespuesta generada por el agente de IA:\n\n{{ $json.candidates[0].content.parts[0].text }}",
+        "options": {}
+      },
+      "name": "SMTP - Enviar Respuesta",
+      "type": "n8n-nodes-base.smtp",
+      "typeVersion": 1,
+      "position": [
+        840,
+        340
+      ],
+      "credentials": {
+        "smtp": "TU_CREDENTIAL_SMTP"
+      }
+    }
+  ],
+  "connections": [
+    {
+      "from": {
+        "node": "IMAP - Buzón de Entrada",
+        "index": 0
+      },
+      "to": {
+        "node": "Gemini - Generar Respuesta",
+        "index": 0
+      }
+    },
+    {
+      "from": {
+        "node": "Gemini - Generar Respuesta",
+        "index": 0
+      },
+      "to": {
+        "node": "SMTP - Enviar Respuesta",
+        "index": 0
+      }
+    }
+  ]
+}

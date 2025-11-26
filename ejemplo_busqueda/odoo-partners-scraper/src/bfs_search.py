@@ -1,11 +1,11 @@
-import pandas as pd
+import pandas as pd # use pandas to load the data
 from collections import deque #use deque to implement the queue
 
-def load_data(filename):
-    df = pd.read_excel(filename)
+def load_data(filename): # Loading excel data
+    df = pd.read_excel(filename) # reading the data from the excel file
     return df
 
-def build_graph(df):
+def build_graph(df): # Convert data to a graph
     graph = {}
     countries = df['Country'].tolist()
     

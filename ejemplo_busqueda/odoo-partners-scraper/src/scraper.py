@@ -1,7 +1,8 @@
-import requests
-from bs4 import BeautifulSoup
-import pandas as pd
+import requests # Import the requests library to handle HTTP requests
+from bs4 import BeautifulSoup # Import BeautifulSoup from bs4 to parse HTML content
+import pandas as pd # Import pandas to handle data manipulation and storage
 
+#Método para obtener los datos de los países y el número de partners de Odoo
 def fetch_partners_data(url):
     response = requests.get(url) # Send a GET request to the URL
     response.raise_for_status() # Raise an exception for 4xx/5xx status codes

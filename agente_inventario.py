@@ -41,8 +41,12 @@ class AgenteInventario:
         cantidad_actual = self.inventario.get(producto, 0)
         nivel_optimo = self.niveles_optimos.get(producto, 0)
         if cantidad_actual < nivel_optimo:
+            valor = -1 * (nivel_optimo - cantidad_actual)
+            print(valor)
             return -1 * (nivel_optimo - cantidad_actual)  # Penalización por déficit
         elif cantidad_actual > nivel_optimo:
+            valor2 = -0.5 * (cantidad_actual - nivel_optimo)
+            print(valor2)
             return -0.5 * (cantidad_actual - nivel_optimo)  # Penalización por exceso
         else:
             return 10  # Alta utilidad si está en el nivel óptimo
