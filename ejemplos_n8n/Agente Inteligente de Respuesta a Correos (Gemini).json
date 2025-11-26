@@ -3,7 +3,7 @@
   "nodes": [
     {
       "parameters": {
-        "chatId": "5555555",
+        "chatId": "55555555",
         "text": "={{ $json.Nombre }} te ha enviado un nuevo mensaje: {{ $json.Mensaje }}. Su email es: {{ $json.email }}",
         "additionalFields": {}
       },
@@ -14,11 +14,11 @@
         -560
       ],
       "id": "a639ec7e-46e0-4dbe-8c63-1e1e780f48d2",
-      "name": "Enviar mensaje a UsuarioX",
+      "name": "Enviar mensaje a Monica Tahan",
       "webhookId": "228d98c6-2c55-4db4-8599-d03db4e77314",
       "credentials": {
         "telegramApi": {
-          "id": "P48nGnpgmLWxFvpr",
+          "id": "P4nGnpgmLWxFvprxxx",
           "name": "Telegram account"
         }
       },
@@ -26,7 +26,7 @@
     },
     {
       "parameters": {
-        "chatId": "757740591",
+        "chatId": "55555555",
         "text": "=Tu agente AI generó este mensaje: {{ $json.content.parts[0].text }}\n\nEstás de acuerdo con esta respuesta para enviarla: Si o No?",
         "additionalFields": {}
       },
@@ -41,7 +41,7 @@
       "webhookId": "228d98c6-2c55-4db4-8599-d03db4e77314",
       "credentials": {
         "telegramApi": {
-          "id": "P48nGnpgmLWxFvpr",
+          "id": "P4nGnpgmLWxFvprxxx",
           "name": "Telegram account"
         }
       }
@@ -57,7 +57,7 @@
         "messages": {
           "values": [
             {
-              "content": "=Analice el siguiente mensaje: {{ $json.Mensaje }} y prepare una respuesta según su contenido, para que sea enviada por email a su remitente. El remitente es: {{ $json.Nombre }} y su correo es: {{ $json.email }}. Debes crear respuestas cortas que no superen los 2000 caracteres y debes escribir el mensaje, sin explicar como debe escribirse, solo debes crearlo. Es decir la salida de tu prompt no debe exceder los 2000 caracteres. Incluye en la salida los campos Remitente: {{ $json.email }} y Nombre: {{ $json.Nombre }}"
+              "content": "=Analice el siguiente mensaje: {{ $json.snippet }} y prepare una respuesta según su contenido, para que sea enviada por email a su remitente. El remitente es: {{ $json.From }} y su correo es: {{ $json.From }}. Debes crear respuestas cortas que no superen los 2000 caracteres y debes escribir el mensaje, sin explicar como debe escribirse, solo debes crearlo. Es decir la salida de tu prompt no debe exceder los 2000 caracteres. Incluye en la salida los campos Remitente es: {{ $json.From }}"
             }
           ]
         },
@@ -99,7 +99,7 @@
       "alwaysOutputData": true,
       "credentials": {
         "telegramApi": {
-          "id": "P48nGnpgmLWxFvpr",
+          "id": "P4nGnpgmLWxFvprxx",
           "name": "Telegram account"
         }
       }
@@ -178,7 +178,7 @@
       "webhookId": "72d6166f-abe8-42d9-8261-daf85e1a35c0",
       "credentials": {
         "gmailOAuth2": {
-          "id": "hgCf3TBVB1WtbKqn",
+          "id": "hgCf3TBVB1WtbKqnxxx",
           "name": "Gmail account"
         }
       }
@@ -198,7 +198,7 @@
     },
     {
       "parameters": {
-        "chatId": "757740591",
+        "chatId": "5555555",
         "text": "Mensajes revisados por hoy ;-)",
         "additionalFields": {}
       },
@@ -213,7 +213,7 @@
       "webhookId": "5b9f2ae2-cbd2-4c41-acec-61e215f49c00",
       "credentials": {
         "telegramApi": {
-          "id": "P48nGnpgmLWxFvpr",
+          "id": "P4nGnpgmLWxFvprxxx",
           "name": "Telegram account"
         }
       }
@@ -301,26 +301,6 @@
     },
     {
       "parameters": {
-        "operation": "get"
-      },
-      "type": "n8n-nodes-base.gmail",
-      "typeVersion": 2.1,
-      "position": [
-        2112,
-        -560
-      ],
-      "id": "ca1ac20e-4d99-45bb-9fab-59196fd97d2e",
-      "name": "Get a message",
-      "webhookId": "5374daa3-b591-4ced-9711-456dc233c3cb",
-      "credentials": {
-        "gmailOAuth2": {
-          "id": "hgCf3TBVB1WtbKqn",
-          "name": "Gmail account"
-        }
-      }
-    },
-    {
-      "parameters": {
         "pollTimes": {
           "item": [
             {
@@ -340,7 +320,7 @@
       "name": "Gmail Trigger",
       "credentials": {
         "gmailOAuth2": {
-          "id": "hgCf3TBVB1WtbKqn",
+          "id": "hgCf3TBVB1WtbKqnxxx",
           "name": "Gmail account"
         }
       }
@@ -408,7 +388,7 @@
             "index": 0
           },
           {
-            "node": "Get a message",
+            "node": "Send a message",
             "type": "main",
             "index": 0
           }
@@ -476,17 +456,6 @@
         ]
       ]
     },
-    "Get a message": {
-      "main": [
-        [
-          {
-            "node": "Send a message",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Gmail Trigger": {
       "main": [
         [
@@ -503,7 +472,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "133e975b-3c08-4efe-bae5-a71c3e8442c0",
+  "versionId": "b135241b-b1d9-4463-9df0-d8029e3211c9",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "683164925d361d7b964cf471386e9bb8e5229171b9a8ab641fc1b75e46d0656c"
