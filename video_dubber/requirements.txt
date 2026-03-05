@@ -1,0 +1,13 @@
+faster-whisper
+edge-tts
+deep-translator
+moviepy>=2.0.0
+librosa
+numpy
+scipy
+soundfile
+torch
+opencv-python
+tqdm
+gradio
+gradio_client
