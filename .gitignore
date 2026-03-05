@@ -1,0 +1,27 @@
+# Video and Media files (Internal Class Rule)
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.wav
+*.mp3
+
+# Exception: keep audio_utils.py etc (already handled by py)
+
+# Large Model Weights (Intel OpenVINO / PyTorch)
+models_ov/
+checkpoints/
+*/checkpoints/
+*.pth
+*.xml
+*.bin
+*.onnx
+
+# Folder exclusions
+video_dubber_local/temp/
+video_dubber/temp/
+__pycache__/
+
+# System
+.DS_Store
+Thumbs.db
