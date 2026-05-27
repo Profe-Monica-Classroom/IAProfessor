@@ -1,10 +1,10 @@
 import pandas as pd # use pandas to load the data
 from collections import deque #use deque to implement the queue
-
+#Método para cargar los datos de los países y el número de partners de Odoo
 def load_data(filename): # Loading excel data
     df = pd.read_excel(filename) # reading the data from the excel file
     return df
-
+#Método para convertir los datos de los países y el número de partners de Odoo en un grafo
 def build_graph(df): # Convert data to a graph
     graph = {}
     countries = df['Country'].tolist()
@@ -13,7 +13,7 @@ def build_graph(df): # Convert data to a graph
         graph[country] = set(countries) - {country}
     
     return graph
-
+#Método de búsqueda en amplitud o anchura (BFS)
 def bfs(graph, start_node): # Breadth First Search method
     visited = set() # Create a set to store the visited nodes
     queue = deque([start_node]) # Create a queue to store the nodes to visit
@@ -29,7 +29,7 @@ def bfs(graph, start_node): # Breadth First Search method
     return result
 
 def main():
-    filename = 'countries_data.xlsx' # Load the data from the Excel file
+    filename = 'countries_data27052026.xlsx' # Load the data from the Excel file
     df = load_data(filename) # Load the data from the Excel file
     graph = build_graph(df) # Build the graph from the data extracted from the Excel file
     

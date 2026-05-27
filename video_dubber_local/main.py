@@ -80,73 +80,65 @@ def run_wav2lip(video_path, audio_path, output_path):
     except Exception as e:
         print(f"Error in Wav2Lip high-quality: {e}") # Print error if it fails
         return False
-# Main method to run the script
-def main():
-    parser = argparse.ArgumentParser(description="AI Video Dubber with Lip Sync") # use of argparse to create parser. What this does is create a parser object that can be used to parse command-line arguments
-    parser.add_argument("input", help="Path to input video (mp4)") # use of argparse to create positional input argument
-    parser.add_argument("--output", default="output_dubbed.mp4", help="Path to output video") # use of argparse to create output argument
-    parser.add_argument("--no_lipsync", action="store_true", help="Skip Wav2Lip step (just dubbing)") # use of argparse to create no_lipsync argument
-    parser.add_argument("--target", default="es", help="Target language code (es, it, fr, de, etc.)") # use of argparse to create target argument
-    parser.add_argument("--gender", default="male", choices=["male", "female"], help="Voice gender (male or female)") # use of argparse to create gender argument
-    parser.add_argument("--quality", default="fast", choices=["fast", "high", "cloud", "intel"], help="Lip sync quality (fast=OpenCV, high=Wav2Lip, cloud=HF Space, intel=OpenVINO)") # use of argparse to create quality argument
+def process_video(input_video, output_video, target_lang, gender, quality, no_lipsync, progress_callback=None):
+    """Core dubbing orchestration logic, callable from CLI or Flask App."""
     
-    args = parser.parse_args() # use of argparse to parse arguments
-    
-    # Paths setup
-    # Add current dir to PATH to ensure ffmpeg.exe is found if present locally
-    os.environ["PATH"] += os.pathsep + os.getcwd() # use of os.environ to set path
-    
-    input_video = os.path.abspath(args.input) # use of os.path.abspath to get absolute path
-    output_video = os.path.abspath(args.output) # use of os.path.abspath to get absolute path
-    temp_dir = "temp" # use of os.path.join to create path
-    os.makedirs(temp_dir, exist_ok=True) # use of os.makedirs to create directory
-    
-    print(f"Processing: {input_video} to {args.target} ({args.gender})")
-    
-    # NEW: Cloud handling (Bypass local process)
-    if args.quality == "cloud":
-        result_path = call_cloud_api(input_video, args.target, args.gender) # Call the cloud API
-        if result_path:
-            shutil.copy(result_path, output_video) # Copy the result to the output path
-            print(f"Done! Cloud result saved to: {output_video}") # Print the result path
+    def update_progress(msg, percent):
+        if progress_callback:
+            progress_callback(msg, percent)
         else:
-            print("El procesamiento en la nube falló. Verifique la conexión a internet o la URL del Space.") # Print error if it fails
-        return
+            print(msg)
+            
+    temp_dir = "temp"
+    os.makedirs(temp_dir, exist_ok=True)
+    
+    update_progress(f"Iniciando procesamiento: {target_lang} ({gender})", 5)
+    
+    # Cloud handling (Bypass local process)
+    if quality == "cloud":
+        update_progress("Conectando con la nube (Hugging Face)...", 10)
+        result_path = call_cloud_api(input_video, target_lang, gender)
+        if result_path:
+            shutil.copy(result_path, output_video)
+            update_progress(f"¡Listo! Resultado en la nube guardado en: {output_video}", 100)
+        else:
+            update_progress("Error: El procesamiento en la nube falló.", 0)
+        return output_video
 
     # 1. Extract Audio
     original_audio_path = os.path.join(temp_dir, "original_audio.wav")
-    print("Extrayendo audio...")     # Print message
-    audio_utils.extract_audio(input_video, original_audio_path) # Extract audio from video
+    update_progress("Paso 1/5: Extrayendo audio original...", 15)
+    audio_utils.extract_audio(input_video, original_audio_path)
     
     # Get video duration
-    clip = VideoFileClip(input_video) # Get video duration
-    duration = clip.duration # Get video duration
-    clip.close() # Close the video
+    clip = VideoFileClip(input_video)
+    duration = clip.duration
+    clip.close()
 
     # 2. Transcribe
-    print("Transcribiendo...") # Print message
-    transcriber = transcription.Transcriber(model_size="base") # Initialize the transcriber
-    segments = transcriber.transcribe(original_audio_path) # Transcribe the audio
+    update_progress("Paso 2/5: Transcribiendo el audio (Whisper)...", 30)
+    transcriber = transcription.Transcriber(model_size="base")
+    segments = transcriber.transcribe(original_audio_path)
     
     if not segments:
-        print("No speech detected. Exiting.") # Print error if no speech detected
-        return
+        update_progress("No se detectó voz en el video. Finalizando.", 100)
+        return None
 
     # 3. Translate & TTS
-    print(f"Traduciendo a {args.target} ({args.gender}) y generando voz...") # Print message
-    translator = translation.Translator(target=args.target) # Initialize the translator
-    tts_engine = tts.TTSEngine(voice=args.target, gender=args.gender) # Initialize the TTS engine
+    update_progress(f"Paso 3/5: Traduciendo a {target_lang} y generando voces...", 50)
+    translator = translation.Translator(target=target_lang)
+    tts_engine = tts.TTSEngine(voice=target_lang, gender=gender)
     
-    audio_segments = [] # use of audio_segments to store the audio segments
+    audio_segments = []
     
     for i, seg in enumerate(tqdm(segments)):
         # Translate
         translated_text = translator.translate(seg['text'])
         
         # Generate Audio
-        segment_audio_path = os.path.join(temp_dir, f"seg_{i}.mp3") # use of os.path.join to create segment audio path
-        tts_engine.generate(translated_text, segment_audio_path) # use of tts_engine to generate audio
-        # use of audio_segments to store the audio segments
+        segment_audio_path = os.path.join(temp_dir, f"seg_{i}.mp3")
+        tts_engine.generate(translated_text, segment_audio_path)
+        
         audio_segments.append({
             'start': seg['start'],
             'path': segment_audio_path,
@@ -154,39 +146,61 @@ def main():
         })
         
     # 4. Composite Audio
-    print("Componiendo nueva pista de audio...") # use of audio_utils to create composite audio
-    mixed_audio_path = os.path.join(temp_dir, f"mixed_{args.target}.wav") # use of os.path.join to create mixed audio path
-    audio_utils.create_composite_audio(audio_segments, duration, mixed_audio_path) # use of audio_utils to create composite audio
+    update_progress("Paso 4/5: Ensamblando la nueva pista de audio maestro...", 75)
+    mixed_audio_path = os.path.join(temp_dir, f"mixed_{target_lang}.wav")
+    audio_utils.create_composite_audio(audio_segments, duration, mixed_audio_path)
     
     # 5. Lip Sync (or just simple merge)
-    if args.no_lipsync:
-        print("Saltando lip sync, mezclando audio directamente...") # use of audio_utils to merge audio
-        audio_utils.merge_audio_video(input_video, mixed_audio_path, output_video) # use of audio_utils to merge audio
-    elif args.quality == "high":
-        print("Iniciando Lip Sync de Alta Calidad (Wav2Lip)...") # Print message
-        success = run_wav2lip(input_video, mixed_audio_path, output_video) # Run the Wav2Lip model
+    update_progress("Paso 5/5: Aplicando sincronización de video y audio...", 85)
+    if no_lipsync:
+        update_progress("Modo Solo Audio: Mezclando sin modificar labios...", 90)
+        audio_utils.merge_audio_video(input_video, mixed_audio_path, output_video)
+    elif quality == "high":
+        update_progress("Iniciando Sincronización Alta Calidad (Wav2Lip Neural)...", 90)
+        success = run_wav2lip(input_video, mixed_audio_path, output_video)
         if not success:
-            print("Wav2Lip falló. Usando mezcla simple por defecto.") # Print error if it fails
+            update_progress("Wav2Lip falló. Usando mezcla simple.", 95)
             audio_utils.merge_audio_video(input_video, mixed_audio_path, output_video)
-    elif args.quality == "intel":
-        print("Iniciando Aceleración de Hardware Intel OpenVINO...") # Print message
+    elif quality == "intel":
+        update_progress("Iniciando Sincronización Intel (OpenVINO NPU)...", 90)
         try:
-            ov_engine = OpenVINOLipSync() # Initialize the OpenVINO engine
-            success = ov_engine.sync_lips(input_video, mixed_audio_path, output_video) # Run the OpenVINO engine
+            ov_engine = OpenVINOLipSync()
+            success = ov_engine.sync_lips(input_video, mixed_audio_path, output_video)
             if not success: raise Exception("Inference failed")
         except Exception as e:
-            print(f"OpenVINO falló: {e}. Usando Sincronización Rápida.") # Print error if it fails
-            ls_processor = MediaPipeLipSync() # Initialize the MediaPipe engine
-            ls_processor.sync_lips(input_video, mixed_audio_path, output_video) # Run the MediaPipe engine
+            update_progress(f"OpenVINO falló: {e}. Activando motor de respaldo rápido.", 92)
+            ls_processor = MediaPipeLipSync()
+            ls_processor.sync_lips(input_video, mixed_audio_path, output_video)
     else:
-        print("Iniciando Sincronización Rápida (MediaPipe + OpenCV)...") # Print message
-        ls_processor = MediaPipeLipSync() # Initialize the MediaPipe engine
-        success = ls_processor.sync_lips(input_video, mixed_audio_path, output_video) # Run the MediaPipe engine
+        update_progress("Iniciando Sincronización Rápida (YOLOv8 Pose)...", 90)
+        ls_processor = MediaPipeLipSync()
+        success = ls_processor.sync_lips(input_video, mixed_audio_path, output_video)
         if not success:
-            print("Sincronización de labios falló. Usando mezcla simple.") # Print error if it fails
-            audio_utils.merge_audio_video(input_video, mixed_audio_path, output_video) # use of audio_utils to merge audio 
+            update_progress("Sincronización de labios falló. Usando mezcla simple.", 95)
+            audio_utils.merge_audio_video(input_video, mixed_audio_path, output_video)
 
-    print(f"¡Listo! Resultado guardado en: {output_video}") # Print message
+    update_progress(f"¡Proceso completado exitosamente!", 100)
+    return output_video
+
+# Main method to run the script
+def main():
+    parser = argparse.ArgumentParser(description="AI Video Dubber with Lip Sync")
+    parser.add_argument("input", help="Path to input video (mp4)")
+    parser.add_argument("--output", default="output_dubbed.mp4", help="Path to output video")
+    parser.add_argument("--no_lipsync", action="store_true", help="Skip Wav2Lip step (just dubbing)")
+    parser.add_argument("--target", default="es", help="Target language code (es, it, fr, de, etc.)")
+    parser.add_argument("--gender", default="male", choices=["male", "female"], help="Voice gender (male or female)")
+    parser.add_argument("--quality", default="fast", choices=["fast", "high", "cloud", "intel"], help="Lip sync quality (fast=OpenCV, high=Wav2Lip, cloud=HF Space, intel=OpenVINO)")
+    
+    args = parser.parse_args()
+    
+    # Add current dir to PATH to ensure ffmpeg.exe is found if present locally
+    os.environ["PATH"] += os.pathsep + os.getcwd()
+    
+    input_video = os.path.abspath(args.input)
+    output_video = os.path.abspath(args.output)
+    
+    process_video(input_video, output_video, args.target, args.gender, args.quality, args.no_lipsync)
 
 if __name__ == "__main__":
     main()

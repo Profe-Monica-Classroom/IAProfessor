@@ -1,0 +1,31 @@
+# .gitignore - Pavimentados UNEXPO
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyd
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Virtual Environments
+venv/
+.venv/
+env/
+
+# Resultados Temporales e Inspecciones
+pavimentados_unexpo/ejemplos/analisis_salida.mp4
+pavimentados_unexpo/ejemplos/grafico_fallas.png
+pavimentados_unexpo/ejemplos/reporte_tecnico_vial.md
+pavimentados_unexpo/ejemplos/recortes_fallas/*
+!pavimentados_unexpo/ejemplos/recortes_fallas/.gitkeep
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

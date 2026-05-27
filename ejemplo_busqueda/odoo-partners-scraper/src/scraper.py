@@ -7,7 +7,7 @@ def fetch_partners_data(url):
     response = requests.get(url) # Send a GET request to the URL
     response.raise_for_status() # Raise an exception for 4xx/5xx status codes
     return response.text
-
+# Método para separar los datos de los países y el número de partners de Odoo
 def parse_countries_data(html):
     soup = BeautifulSoup(html, 'html.parser') # Parse the HTML content
     countries_data = {} # Create an empty dictionary to store the data
@@ -42,7 +42,7 @@ def main():
     for country, number in countries_data.items():
         print(f'{country}: {number}')
     
-    save_to_excel(countries_data, 'countries_data.xlsx')
+    save_to_excel(countries_data, 'countries_data27052026.xlsx')
     print('Data saved to countries_data.xlsx')
 
 if __name__ == '__main__': # Run the main function if the script is executed

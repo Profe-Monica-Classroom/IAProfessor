@@ -1,0 +1,131 @@
+# reglas_condicion.yaml
+# Reglas para evaluar la condición estructural global de cada sección vial (ICP).
+# Mapea un Hecho('seccion_analizada') a un Hecho('condicion_via').
+
+reglas:
+  - id: "R021"
+    nombre: "Condición Vial Muy Mala"
+    categoria: "condicion"
+    hecho_principal: "seccion_analizada"
+    condiciones:
+      - campo: "num_fallas"
+        operador: ">="
+        valor: 10
+      - campo: "num_baches"
+        operador: ">="
+        valor: 3
+    accion:
+      hecho: "condicion_via"
+      propiedades:
+        seccion: "{seccion}"
+        indice: "MUY_MALO"
+    explicacion: >
+      Una sección con 10 o más fallas detectadas y al menos 3 baches abiertos
+      presenta una degradación severa que compromete la transitabilidad y la base estructural.
+      La condición global califica como MUY MALA.
+    referencia: "Manual de Capacidad y Condición Vial - UNEXPO"
+
+  - id: "R022"
+    nombre: "Condición Vial Mala por Bache Abierto"
+    categoria: "condicion"
+    hecho_principal: "seccion_analizada"
+    condiciones:
+      - campo: "num_fallas"
+        operador: ">="
+        valor: 1
+      - campo: "num_baches"
+        operador: ">="
+        valor: 1
+    accion:
+      hecho: "condicion_via"
+      propiedades:
+        seccion: "{seccion}"
+        indice: "MALO"
+    explicacion: >
+      Una sección con 5 o más fallas y al menos 1 bache representa un pavimento dañado
+      que requiere reparación urgente. La presencia de baches degrada directamente la condición a MALA.
+    referencia: "Normas COVENIN de Carreteras y Vialidad - Venezuela"
+
+  - id: "R023"
+    nombre: "Condición Vial Mala por Fatiga Estructural"
+    categoria: "condicion"
+    hecho_principal: "seccion_analizada"
+    condiciones:
+      - campo: "num_piel_cocodrilo"
+        operador: ">="
+        valor: 3
+    accion:
+      hecho: "condicion_via"
+      propiedades:
+        seccion: "{seccion}"
+        indice: "MALO"
+    explicacion: >
+      Tener 3 o más zonas con grietas en piel de cocodrilo (fatiga por cargas repetidas)
+      indica que el paquete de soporte (base y subbase) está fallando bajo la carpeta de rodadura,
+      lo que justifica calificar la sección como MALA.
+    referencia: "Manual ASTM D6433 - Pavement Condition Index"
+
+  - id: "R024"
+    nombre: "Condición Vial Regular"
+    categoria: "condicion"
+    hecho_principal: "seccion_analizada"
+    condiciones:
+      - campo: "num_fallas"
+        operador: ">="
+        valor: 3
+      - campo: "num_fallas"
+        operador: "<"
+        valor: 5
+      - campo: "num_baches"
+        operador: "=="
+        valor: 0
+    accion:
+      hecho: "condicion_via"
+      propiedades:
+        seccion: "{seccion}"
+        indice: "REGULAR"
+    explicacion: >
+      Un tramo con entre 3 y 4 grietas o deformaciones menores, y sin baches abiertos,
+      muestra desgaste normal por envejecimiento. Corresponde a una condición REGULAR.
+    referencia: "Manual de Inspección de Pavimentos"
+
+  - id: "R025"
+    nombre: "Condición Vial Buena"
+    categoria: "condicion"
+    hecho_principal: "seccion_analizada"
+    condiciones:
+      - campo: "num_fallas"
+        operador: ">"
+        valor: 0
+      - campo: "num_fallas"
+        operador: "<"
+        valor: 3
+      - campo: "num_baches"
+        operador: "=="
+        valor: 0
+    accion:
+      hecho: "condicion_via"
+      propiedades:
+        seccion: "{seccion}"
+        indice: "BUENO"
+    explicacion: >
+      Tener muy pocas fallas superficiales aisladas (1 o 2 grietas longitudinales)
+      y sin fallas severas ni baches, indica una calzada en BUEN estado.
+    referencia: "Manual de Inspección de Pavimentos"
+
+  - id: "R026"
+    nombre: "Condición Vial Excelente"
+    categoria: "condicion"
+    hecho_principal: "seccion_analizada"
+    condiciones:
+      - campo: "num_fallas"
+        operador: "=="
+        valor: 0
+    accion:
+      hecho: "condicion_via"
+      propiedades:
+        seccion: "{seccion}"
+        indice: "EXCELENTE"
+    explicacion: >
+      Ningún daño detectado en la sección analizada. La vialidad está en estado EXCELENTE.
+    referencia: "Manual de Inspección de Pavimentos"

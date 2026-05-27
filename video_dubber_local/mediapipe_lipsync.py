@@ -4,14 +4,16 @@ import librosa # space librosa of python to process audio
 import os # space os of python
 from tqdm import tqdm # space tqdm of python to show progress
 from audio_utils import merge_audio_video # space audio_utils of python to merge audio and video
+from ultralytics import YOLO
 
 class MediaPipeLipSync:
     def __init__(self):
-        # We fall back to OpenCV Haar Cascades since MediaPipe lacks Python 3.13 binaries.
-        # This classic approach is purely mathematical, fast, and educational.
-        cascade_path = cv2.data.haarcascades + 'haarcascade_frontalface_default.xml' # space haarcascade_frontalface_default.xml of python
-        self.face_cascade = cv2.CascadeClassifier(cascade_path) # space CascadeClassifier of python
+        # We replace OpenCV Haar Cascades with YOLOv8-pose for much more stable face detection
+        # This will fix the "deformed lips" issue caused by bounding box jitter.
+        print("Cargando modelo YOLOv8-pose para detección facial...")
+        self.face_model = YOLO('yolov8n-pose.pt')
         self.last_face = None # space last_face of python
+
 
     def extract_audio_energy(self, audio_path, fps, video_duration):
         y, sr = librosa.load(audio_path, sr=None) # space librosa.load of python to load audio
@@ -65,22 +67,45 @@ class MediaPipeLipSync:
                 break
                 
             vol = rms[frame_idx] if frame_idx < len(rms) else 0.0
-            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY) # space cv2.cvtColor of python to convert to gray
             
-            faces = self.face_cascade.detectMultiScale(gray, 1.1, 4) # space detectMultiScale of python to detect faces
+            # Detect face using YOLOv8-pose (which provides stable facial keypoints)
+            results = self.face_model(frame, classes=0, verbose=False)
+            face_detected = False
             
-            if len(faces) > 0:
-                # Select the largest face
-                face = max(faces, key=lambda rect: rect[2] * rect[3]) # space face of python to get face
-                if self.last_face is not None:
-                    # Smooth the frame (IIR filter)
-                    x, y, w, h = face # space face of python to get face
-                    lx, ly, lw, lh = self.last_face # space last_face of python to get last face
-                    self.last_face = (int(0.8*lx + 0.2*x), int(0.8*ly + 0.2*y), 
-                                      int(0.8*lw + 0.2*w), int(0.8*lh + 0.2*h)) # space last_face of python to get last face
-                else:
-                    self.last_face = face # space last_face of python to get last face
-            
+            if len(results) > 0 and len(results[0].boxes) > 0:
+                # Get the first person's pose keypoints (0: nose, 1: l_eye, 2: r_eye, 3: l_ear, 4: r_ear)
+                kpts = results[0].keypoints.xy[0].cpu().numpy()
+                
+                # Filter valid facial keypoints (those with non-zero coordinates)
+                face_kpts = kpts[:5]
+                valid_kpts = face_kpts[(face_kpts[:, 0] > 0) & (face_kpts[:, 1] > 0)]
+                
+                if len(valid_kpts) >= 3:
+                    # Construct a stable bounding box around the facial keypoints
+                    min_x, min_y = np.min(valid_kpts, axis=0)
+                    max_x, max_y = np.max(valid_kpts, axis=0)
+                    
+                    # Expand the keypoints box to cover the whole face/head
+                    face_w = max_x - min_x
+                    face_h = max_y - min_y
+                    
+                    # Add margins (forehead and jaw)
+                    x = int(min_x - face_w * 0.4)
+                    y = int(min_y - face_h * 0.8)
+                    w = int(face_w * 1.8)
+                    h = int(face_h * 2.5)
+                    
+                    face = (x, y, w, h)
+                    face_detected = True
+                    
+                    if self.last_face is not None:
+                        # Smooth the frame (IIR filter) to prevent any micro-jittering
+                        lx, ly, lw, lh = self.last_face
+                        self.last_face = (int(0.8*lx + 0.2*x), int(0.8*ly + 0.2*y), 
+                                          int(0.8*lw + 0.2*w), int(0.8*lh + 0.2*h))
+                    else:
+                        self.last_face = face
+                        
             warped_frame = frame.copy()
             
             if self.last_face is not None:

@@ -1,0 +1,109 @@
+# reglas_mantenimiento.yaml
+# Recomendaciones de mantenimiento y prioridad del tramo vial.
+# Mapea un Hecho('condicion_via') a un Hecho('mantenimiento').
+
+reglas:
+  - id: "R031"
+    nombre: "Rehabilitación Completa y Urgente"
+    categoria: "mantenimiento"
+    hecho_principal: "seccion_analizada"
+    condiciones:
+      - hecho_existe: "condicion_via"
+        condiciones:
+          seccion: "{seccion}"
+          indice: "MUY_MALO"
+    accion:
+      hecho: "mantenimiento"
+      propiedades:
+        seccion: "{seccion}"
+        tipo_mantenimiento: "REHABILITACION_MAYOR"
+        prioridad: "URGENTE"
+        accion_recomendada: "Reconstrucción total. Requiere fresado completo de la carpeta asfáltica, reparación de bases y colocación de nueva mezcla asfáltica caliente."
+    explicacion: >
+      Dado que la sección vial está en condición MUY MALA, la estructura del pavimento está agotada.
+      Los bacheos menores no son rentables. Se prescribe una rehabilitación mayor de carácter URGENTE
+      para garantizar la seguridad del tránsito.
+    referencia: "Manual de Mantenimiento de Carreteras - INVIAS"
+
+  - id: "R032"
+    nombre: "Mantenimiento Correctivo con Parcheo Profundo"
+    categoria: "mantenimiento"
+    hecho_principal: "seccion_analizada"
+    condiciones:
+      - hecho_existe: "condicion_via"
+        condiciones:
+          seccion: "{seccion}"
+          indice: "MALO"
+    accion:
+      hecho: "mantenimiento"
+      propiedades:
+        seccion: "{seccion}"
+        tipo_mantenimiento: "MANTENIMIENTO_CORRECTIVO"
+        prioridad: "ALTA"
+        accion_recomendada: "Bacheo profundo y localizado en áreas de baches, sellado de fisuras circundantes y parcheo con mezcla asfáltica de rodadura."
+    explicacion: >
+      La vía está calificada como MALA. Se requiere la reparación correctiva de baches y piel de cocodrilo
+      con prioridad ALTA para evitar que el daño se extienda a toda la calzada y subbase.
+    referencia: "Manual de Mantenimiento de Carreteras - INVIAS"
+
+  - id: "R033"
+    nombre: "Mantenimiento Preventivo y Sello de Grietas"
+    categoria: "mantenimiento"
+    hecho_principal: "seccion_analizada"
+    condiciones:
+      - hecho_existe: "condicion_via"
+        condiciones:
+          seccion: "{seccion}"
+          indice: "REGULAR"
+    accion:
+      hecho: "mantenimiento"
+      propiedades:
+        seccion: "{seccion}"
+        tipo_mantenimiento: "MANTENIMIENTO_PREVENTIVO"
+        prioridad: "MEDIA"
+        accion_recomendada: "Sellado de grietas longitudinales y transversales con asfalto líquido o emulsión modificada. Microbacheo preventivo de imperfecciones."
+    explicacion: >
+      En condición REGULAR, el pavimento aún no ha fallado estructuralmente. El sellado inmediato de grietas
+      evitará que el agua de lluvia penetre a las capas inferiores, prolongando la vida útil del pavimento.
+    referencia: "Manual de Pavimentos Asfálticos - MTC"
+
+  - id: "R034"
+    nombre: "Mantenimiento Rutinario de Vía"
+    categoria: "mantenimiento"
+    hecho_principal: "seccion_analizada"
+    condiciones:
+      - hecho_existe: "condicion_via"
+        condiciones:
+          seccion: "{seccion}"
+          indice: "BUENO"
+    accion:
+      hecho: "mantenimiento"
+      propiedades:
+        seccion: "{seccion}"
+        tipo_mantenimiento: "MANTENIMIENTO_RUTINARIO"
+        prioridad: "BAJA"
+        accion_recomendada: "Limpieza de drenajes, alcantarillas y cunetas. Desbroce de maleza lateral y sellado preventivo de fisuras aisladas."
+    explicacion: >
+      El pavimento se encuentra en BUEN estado. El mantenimiento rutinario de drenajes y cunetas es vital,
+      ya que el agua es el principal enemigo del pavimento asfáltico. Prioridad BAJA.
+    referencia: "Manual de Conservación de Carreteras"
+
+  - id: "R035"
+    nombre: "Inspección de Control y Monitoreo"
+    categoria: "mantenimiento"
+    hecho_principal: "seccion_analizada"
+    condiciones:
+      - hecho_existe: "condicion_via"
+        condiciones:
+          seccion: "{seccion}"
+          indice: "EXCELENTE"
+    accion:
+      hecho: "mantenimiento"
+      propiedades:
+        seccion: "{seccion}"
+        tipo_mantenimiento: "MONITOREO_PREVENTIVO"
+        prioridad: "BAJA"
+        accion_recomendada: "Ninguna acción física correctiva requerida. Mantener inspección vial anual programada."
+    explicacion: >
+      La calzada está en perfecto estado (EXCELENTE). No requiere intervención física, solo monitoreo rutinario.
+    referencia: "Manual de Inspección de Carreteras"

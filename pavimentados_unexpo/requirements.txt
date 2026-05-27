@@ -1,0 +1,30 @@
+# requirements.txt - Dependencias de Pavimentados UNEXPO
+
+# Percepción y Machine Learning (YOLOv8/v11)
+ultralytics>=8.3.0
+torch
+torchvision
+
+# Procesamiento de Video Headless (Crucial para servidores en la nube como HF Spaces)
+opencv-python-headless>=4.3.0
+
+# Procesamiento y Estructuras de Datos
+pandas
+numpy<2.0.0
+scipy
+
+# Utilidades de GPS y NMEA (Requeridas por el proyecto base del BID)
+pynmea2>=1.15.0
+xmltodict
+
+# Sistema Experto
+pyyaml>=6.0
+
+# Interfaz Gráfica de Usuario y Visualización
+gradio>=5.0
+matplotlib
+pillow
+
+# Otras utilidades
+tqdm
+dill

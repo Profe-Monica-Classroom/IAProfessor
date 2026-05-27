@@ -15,3 +15,6 @@ pydub
 gradio_client
 openvino
 onnx
+flask
+werkzeug
+ultralytics

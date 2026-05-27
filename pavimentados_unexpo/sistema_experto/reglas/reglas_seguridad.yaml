@@ -1,0 +1,106 @@
+# reglas_seguridad.yaml
+# Evaluación del nivel de riesgo de seguridad vial por tramo.
+# Mapea un Hecho('seccion_analizada') a un Hecho('riesgo_seguridad').
+
+reglas:
+  - id: "R041"
+    nombre: "Riesgo de Accidente Crítico"
+    categoria: "seguridad"
+    hecho_principal: "seccion_analizada"
+    condiciones:
+      - campo: "num_baches"
+        operador: ">="
+        valor: 3
+    accion:
+      hecho: "riesgo_seguridad"
+      propiedades:
+        seccion: "{seccion}"
+        nivel: "CRITICO"
+        descripcion: "Peligro inminente de pérdida de control del vehículo o reventón de neumáticos debido a múltiples baches profundos."
+    explicacion: >
+      Tener 3 o más baches abiertos en una sección vial de 100 metros aumenta drásticamente
+      la probabilidad de accidentes viales graves, ya que los conductores realizan maniobras
+      bruscas de esquiva o impactan directamente a alta velocidad.
+    referencia: "Manual de Seguridad Vial y Prevención de Accidentes - UNEXPO"
+
+  - id: "R042"
+    nombre: "Riesgo de Accidente Alto por Bache Abierto"
+    categoria: "seguridad"
+    hecho_principal: "seccion_analizada"
+    condiciones:
+      - campo: "num_baches"
+        operador: ">"
+        valor: 0
+      - campo: "num_baches"
+        operador: "<"
+        valor: 3
+    accion:
+      hecho: "riesgo_seguridad"
+      propiedades:
+        seccion: "{seccion}"
+        nivel: "ALTO"
+        descripcion: "Riesgo elevado de maniobras evasivas o daños menores en la suspensión por presencia de baches."
+    explicacion: >
+      Incluso la presencia de un solo bache abierto (D40) representa un riesgo ALTO de seguridad,
+      especialmente de noche o bajo condiciones de lluvia donde los huecos se llenan de agua y son invisibles.
+    referencia: "Manual de Seguridad Vial y Prevención de Accidentes - UNEXPO"
+
+  - id: "R043"
+    nombre: "Riesgo Alto por Deformación de Calzada"
+    categoria: "seguridad"
+    hecho_principal: "seccion_analizada"
+    condiciones:
+      - campo: "num_piel_cocodrilo"
+        operador: ">="
+        valor: 3
+    accion:
+      hecho: "riesgo_seguridad"
+      propiedades:
+        seccion: "{seccion}"
+        nivel: "ALTO"
+        descripcion: "Riesgo de hidroplaneo (aquaplaning) en época de lluvias y pérdida de adherencia."
+    explicacion: >
+      La presencia extendida de piel de cocodrilo y deformaciones rompe la regularidad de la calzada
+      y acumula agua en surcos, provocando pérdida de control por hidroplaneo a velocidades comerciales.
+    referencia: "Manual de Seguridad Vial y Prevención de Accidentes - UNEXPO"
+
+  - id: "R044"
+    nombre: "Riesgo de Seguridad Vial Medio"
+    categoria: "seguridad"
+    hecho_principal: "seccion_analizada"
+    condiciones:
+      - campo: "num_fallas"
+        operador: ">"
+        valor: 0
+      - campo: "num_baches"
+        operador: "=="
+        valor: 0
+    accion:
+      hecho: "riesgo_seguridad"
+      propiedades:
+        seccion: "{seccion}"
+        nivel: "MEDIO"
+        descripcion: "Calzada rugosa o agrietada. Se recomienda precaución y reducción de velocidad."
+    explicacion: >
+      La vía presenta grietas o fallas de rodadura pero sin baches abiertos. Esto representa un nivel
+      de riesgo MEDIO, donde se reduce el confort pero se mantiene la seguridad básica del tránsito.
+    referencia: "Manual de Seguridad Vial"
+
+  - id: "R045"
+    nombre: "Riesgo de Seguridad Vial Bajo"
+    categoria: "seguridad"
+    hecho_principal: "seccion_analizada"
+    condiciones:
+      - campo: "num_fallas"
+        operador: "=="
+        valor: 0
+    accion:
+      hecho: "riesgo_seguridad"
+      propiedades:
+        seccion: "{seccion}"
+        nivel: "BAJO"
+        descripcion: "Vía en perfecto estado. Condiciones óptimas de circulación."
+    explicacion: >
+      La ausencia de fallas garantiza que el tramo cumple con los estándares óptimos de fricción,
+      regularidad superficial y visibilidad, determinando un riesgo BAJO de seguridad.
+    referencia: "Manual de Seguridad Vial"

@@ -30,14 +30,14 @@
         }
       },
       "name": "Gemini - Generar Respuesta",
-      "type": "n8n-nodes-base.googleVertexAi",
+      "type": "n8n-nodes-base.googleGemini",
       "typeVersion": 1,
       "position": [
         540,
         340
       ],
       "credentials": {
-        "googleVertexAi": "TU_CREDENTIAL_GEMINI_VERTEX_AI"
+        "googleGeminiApi": "TU_API_KEY_GOOGLE_AI_STUDIO"
       }
     },
     {

@@ -1,0 +1,233 @@
+# reglas_severidad.yaml
+# Clasificación de la severidad del daño de cada falla individual.
+# Mapea un Hecho('falla_detectada') a un Hecho('severidad').
+
+reglas:
+  - id: "R001"
+    nombre: "Bache Crítico"
+    categoria: "severidad"
+    hecho_principal: "falla_detectada"
+    condiciones:
+      - campo: "tipo_falla"
+        operador: "=="
+        valor: "D40"
+      - campo: "area_deteccion"
+        operador: ">"
+        valor: 5000
+    accion:
+      hecho: "severidad"
+      propiedades:
+        id_falla: "{id_falla}"
+        seccion: "{seccion}"
+        tipo_falla: "{tipo_falla}"
+        nivel: "CRITICA"
+    explicacion: >
+      Un bache abierto (D40) con un área de detección superior a 5000 píxeles
+      representa un hueco profundo y peligroso en la calzada, lo cual califica
+      como severidad CRÍTICA por el alto riesgo de daños mecánicos o accidentes.
+    referencia: "Manual de Inspección Visual de Pavimentos - INVIAS"
+
+  - id: "R002"
+    nombre: "Bache de Severidad Alta"
+    categoria: "severidad"
+    hecho_principal: "falla_detectada"
+    condiciones:
+      - campo: "tipo_falla"
+        operador: "=="
+        valor: "D40"
+      - campo: "area_deteccion"
+        operador: "<="
+        valor: 5000
+    accion:
+      hecho: "severidad"
+      propiedades:
+        id_falla: "{id_falla}"
+        seccion: "{seccion}"
+        tipo_falla: "{tipo_falla}"
+        nivel: "ALTA"
+    explicacion: >
+      Un bache abierto (D40) de menor tamaño (menor o igual a 5000 píxeles) es
+      un daño vial importante que está en desarrollo y representa severidad ALTA.
+    referencia: "Manual de Inspección Visual de Pavimentos - INVIAS"
+
+  - id: "R003"
+    nombre: "Grieta Piel de Cocodrilo Mayor"
+    categoria: "severidad"
+    hecho_principal: "falla_detectada"
+    condiciones:
+      - campo: "tipo_falla"
+        operador: "=="
+        valor: "D10"
+      - campo: "area_deteccion"
+        operador: ">"
+        valor: 8000
+    accion:
+      hecho: "severidad"
+      propiedades:
+        id_falla: "{id_falla}"
+        seccion: "{seccion}"
+        tipo_falla: "{tipo_falla}"
+        nivel: "ALTA"
+    explicacion: >
+      La falla en piel de cocodrilo (D10) indica fatiga del pavimento y falla estructural.
+      Si el área supera los 8000 píxeles, la falla es extensa, indicando severidad ALTA.
+    referencia: "Manual ASTM D6433 - Pavement Condition Index"
+
+  - id: "R004"
+    nombre: "Grieta Piel de Cocodrilo Moderada"
+    categoria: "severidad"
+    hecho_principal: "falla_detectada"
+    condiciones:
+      - campo: "tipo_falla"
+        operador: "=="
+        valor: "D10"
+      - campo: "area_deteccion"
+        operador: "<="
+        valor: 8000
+    accion:
+      hecho: "severidad"
+      propiedades:
+        id_falla: "{id_falla}"
+        seccion: "{seccion}"
+        tipo_falla: "{tipo_falla}"
+        nivel: "MEDIA"
+    explicacion: >
+      Grietas en piel de cocodrilo (D10) con áreas de detección moderadas (<= 8000)
+      indican fatiga incipiente y corresponden a severidad MEDIA.
+    referencia: "Manual ASTM D6433 - Pavement Condition Index"
+
+  - id: "R005"
+    nombre: "Grieta Longitudinal Extensa"
+    categoria: "severidad"
+    hecho_principal: "falla_detectada"
+    condiciones:
+      - campo: "tipo_falla"
+        operador: "=="
+        valor: "D00"
+      - campo: "area_deteccion"
+        operador: ">"
+        valor: 6000
+    accion:
+      hecho: "severidad"
+      propiedades:
+        id_falla: "{id_falla}"
+        seccion: "{seccion}"
+        tipo_falla: "{tipo_falla}"
+        nivel: "ALTA"
+    explicacion: >
+      Una grieta longitudinal o transversal (D00) con un área sustancial indica
+      un agrietamiento que permite la filtración de agua al soporte, severidad ALTA.
+    referencia: "Manual de Inspección Visual de Pavimentos - INVIAS"
+
+  - id: "R006"
+    nombre: "Grieta Longitudinal Menor"
+    categoria: "severidad"
+    hecho_principal: "falla_detectada"
+    condiciones:
+      - campo: "tipo_falla"
+        operador: "=="
+        valor: "D00"
+      - campo: "area_deteccion"
+        operador: "<="
+        valor: 6000
+    accion:
+      hecho: "severidad"
+      propiedades:
+        id_falla: "{id_falla}"
+        seccion: "{seccion}"
+        tipo_falla: "{tipo_falla}"
+        nivel: "BAJA"
+    explicacion: >
+      Grietas longitudinales menores (<= 6000 px) son fallas superficiales
+      tempranas y corresponden a severidad BAJA.
+    referencia: "Manual de Inspección Visual de Pavimentos - INVIAS"
+
+  - id: "R007"
+    nombre: "Deformación Severa"
+    categoria: "severidad"
+    hecho_principal: "falla_detectada"
+    condiciones:
+      - campo: "tipo_falla"
+        operador: "=="
+        valor: "D20"
+      - campo: "area_deteccion"
+        operador: ">"
+        valor: 10000
+    accion:
+      hecho: "severidad"
+      propiedades:
+        id_falla: "{id_falla}"
+        seccion: "{seccion}"
+        tipo_falla: "{tipo_falla}"
+        nivel: "ALTA"
+    explicacion: >
+      Deformaciones, ahuellamientos o hundimientos (D20) extensos indican
+      inestabilidad de la base o subrasante del pavimento, severidad ALTA.
+    referencia: "Manual de Inspección Visual de Pavimentos - INVIAS"
+
+  - id: "R008"
+    nombre: "Deformación Moderada"
+    categoria: "severidad"
+    hecho_principal: "falla_detectada"
+    condiciones:
+      - campo: "tipo_falla"
+        operador: "=="
+        valor: "D20"
+      - campo: "area_deteccion"
+        operador: "<="
+        valor: 10000
+    accion:
+      hecho: "severidad"
+      propiedades:
+        id_falla: "{id_falla}"
+        seccion: "{seccion}"
+        tipo_falla: "{tipo_falla}"
+        nivel: "MEDIA"
+    explicacion: >
+      Ahuellamientos o deformaciones menores o iguales a 10000 píxeles
+      califican como severidad MEDIA.
+    referencia: "Manual de Inspección Visual de Pavimentos - INVIAS"
+
+  - id: "R009"
+    nombre: "Desgaste de Demarcación Vial"
+    categoria: "severidad"
+    hecho_principal: "falla_detectada"
+    condiciones:
+      - campo: "tipo_falla"
+        operador: "in"
+        valor: ["D43", "D44"]
+      - campo: "confianza"
+        operador: "<"
+        valor: 0.65
+    accion:
+      hecho: "severidad"
+      propiedades:
+        id_falla: "{id_falla}"
+        seccion: "{seccion}"
+        tipo_falla: "{tipo_falla}"
+        nivel: "MEDIA"
+    explicacion: >
+      Una demarcación vial horizontal (D43 o D44) detectada con baja confianza
+      por el modelo de visión por computadora suele indicar borrado y desgaste
+      por uso vial, lo que califica con severidad MEDIA por reducción de visibilidad.
+    referencia: "Manual de Dispositivos para Regulación del Tránsito - UNEXPO"
+
+  - id: "R010"
+    nombre: "Otros Daños Menores"
+    categoria: "severidad"
+    hecho_principal: "falla_detectada"
+    condiciones:
+      - campo: "tipo_falla"
+        operador: "=="
+        valor: "OT0"
+    accion:
+      hecho: "severidad"
+      propiedades:
+        id_falla: "{id_falla}"
+        seccion: "{seccion}"
+        tipo_falla: "{tipo_falla}"
+        nivel: "BAJA"
+    explicacion: >
+      Cualquier otra falla no clasificada explícitamente (OT0) se categoriza como severidad BAJA
+      para mantener un monitoreo preventivo.
+    referencia: "Manual de Inspección de Carreteras"
