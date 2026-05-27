@@ -8,7 +8,7 @@ sdk_version: "5.1.0"
 app_file: app.py
 pinned: false
 license: mit
-short_description: "Sistema Experto Híbrido de Inspección Vial — UNEXPO Mecatrónica. Aplicación base tomada del repositorio del Banco Interamericano de Desarrollo - BID: https://github.com/EL-BID/pavimentados/tree/main"
+short_description: "Sistema Experto Híbrido de Inspección Vial — UNEXPO Guarenas, Ing. Mecatrónica. Aplicación base tomada del repositorio del Banco Interamericano de Desarrollo - BID: https://github.com/EL-BID/pavimentados/tree/main"
 ---
 
 # 🛣️ Pavimentados UNEXPO
@@ -62,4 +62,4 @@ Para correr el proyecto en computadoras locales o servidores de la UNEXPO:
 4. **Acceso web**:
    Ingresa a `http://localhost:7860` en tu navegador web.
 
-**Creado por:** prof. Mónica Tahan como parte del contenido académico para la enseñanza de Inteligencia Artificial en la Unexpo Guarenas, demostrando también el uso del vibe coding y los modelos del agente **Google Antigravity** - Mayo, 2026
+**Release de Pavimentados modificado y adaptado por:** prof. Mónica Tahan, mtahan@unexpo.edu.ve, como parte del contenido académico para la enseñanza de Inteligencia Artificial en la Unexpo Guarenas, demostrando también el uso del vibe coding y los modelos del agente **Google Antigravity**, teniendo como base el proyecto del BID: https://github.com/EL-BID/pavimentados - Mayo, 2026
