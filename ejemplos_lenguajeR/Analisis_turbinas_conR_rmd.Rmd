@@ -1,0 +1,378 @@
+---
+title: "Tarea5 Monica Tahan"
+author: "Mónica Tahan"
+date: "19/02/2024"
+output: word_document
+---
+```{r}
+
+# Cargando las librerias:
+
+library(rpart) #Permite hacer el modelo de Arbol
+library(rpart.plot) #Permite graficar el Arbol
+library(readr)
+library(MASS)
+library(corrplot)
+library(ggplot2) 
+#library(DBI) # Permite conectar a una base de datos
+library(readxl) # Permite abrir archivos tipo excel
+#install.packages('psych')
+library(psych) # permite obtener, kurtosis, simetria y normalidad
+library(PerformanceAnalytics) # Para ver correlacion de los datos
+```
+## Análisis Estadístico
+
+Para analizar las turbinas Francis y Kaplan, empleando los datos recopilados de algunos diseños de turbinas hidroeléctricas empleadas a nivel mundial, se procedió a estudiar su comportamiento, tomando en cuenta el coeficiente de Thomas.
+
+El coeficiente de Thomas es el factor que se emplea para evaluar, según la velocidad específica (Ns), si se puede producir o no cavitación en la turbina. Este factor puede ser calculado empleando la ecuación:
+
+Factor Thomas (σ) = (Ns/sqrt(Hd))0,5
+
+Partiendo de este principio, se pudo obtener para los datos recopilados, el coeficiente de Thomas y se pudo comparar con la gráfica de cavitación ideal (Figura 1), en donde se encontraban operando dichas turbinas.
+
+
+```{r}
+# Datos para el Estudio
+
+Datos_Turbinas_Francis_y_Kaplan <- read_excel("C:/Users/monic/Downloads/Datos Turbinas Francis y Kaplan.xlsx", 
+                                              sheet = "Turbinas Francis y Kaplan")
+View(Datos_Turbinas_Francis_y_Kaplan)
+
+# Datos sobre Pérdidas de Carga
+
+Datos_perdidas <- read_excel("C:/Users/monic/Downloads/Datos Turbinas Francis y Kaplan.xlsx", 
+                                              sheet = "Perdidas")
+View(Datos_perdidas)
+```
+
+Por otro lado, en cuanto al tipo de material, es necesaria la recopilación de datos experimentales, donde se pueda medir las pérdidas de las turbinas en operación y la temperatura y presión en donde se encuentren operando. A efectos de estudiar las condiciones del material, se procedió a graficar el comportamiento ideal de las pérdidas, para que permita luego realizar algunas conclusiones de diseño.
+
+## Gráficos Realizados
+
+
+```{r}
+#GRAFICANDO LAS PERDIDAS POR PRESION ATMOSFERICA 
+
+plot(Datos_perdidas$`Presión atmosférica (mm de Hg)`, Datos_perdidas$`Pérdidas de carga (metros)`, type = "l",
+     col = "lightblue", # Color
+     lwd = 3)           # Ancho de línea
+
+#AGREGANDO LAS PERDIDAS POR TEMPERATURA
+
+lines(Datos_perdidas$`Presión atmosférica (mm de Hg)`, Datos_perdidas$`Pérdidaspor temperatura (metros)`, type = "l", col = 2) # Mismos valores de X
+
+# GRAFICANDO TODO EL DATASET DE PERDIDAS
+
+matplot(Datos_perdidas, type = "l", main = "Perdidas por Temperatura y Presion")
+
+# GRAFICANDO LAS TURBINAS KAPLAN Y FRANCIS CON MATPLOT
+
+matplot(Datos_Turbinas_Francis_y_Kaplan, type = "l", main = "KAPLAN y FRANCIS")
+
+# graficando velocidad especifica y coeficiente de cavitacion de thomas
+
+plot(Datos_Turbinas_Francis_y_Kaplan$`Velocidad Especifica Ns (rpm)`, Datos_Turbinas_Francis_y_Kaplan$`Factor Thomas`, type = "l",
+     col = "red", # Color
+     lwd = 3)           # Ancho de línea
+```
+
+## Uso de la Estadística Descriptiva
+
+Uno de los primeros análisis estadísticos realizados, se compone del análisis descriptivo, donde se obtuvo las frecuancias medias, rangos, correlación entre las variables, la curtosis y el coeficiente de Rho Spearman.
+
+```{r}
+# Gráfico de Densidad
+plot(density(Datos_Turbinas_Francis_y_Kaplan$`Velocidad Especifica Ns (rpm)`))
+polygon(density(Datos_Turbinas_Francis_y_Kaplan$`Velocidad Especifica Ns (rpm)`), col="green", border="black")
+
+#Seleccion de las columnas a emplear
+
+columnas_turbinas<-c(3,4,5,6,7)
+
+
+dataset_turbinas_num  <-as.data.frame(Datos_Turbinas_Francis_y_Kaplan[,columnas_turbinas])
+View(dataset_turbinas_num)
+
+#Determinación de Frecuencias absolutas
+
+frecuencia_absoluta_turbinas <- summary(dataset_turbinas_num)
+frecuencia_absoluta_turbinas
+
+#RANGOS DE LAS VARIABLES
+
+rango_potencia <- range(dataset_turbinas_num$`Potencia (MW)`)
+rango_potencia
+
+rango_cargaHn <- range(dataset_turbinas_num$`Carga Hn( m)`)
+rango_cargaHn
+
+rango_caudalQn <- range(dataset_turbinas_num$`Caudal Qd (m3/s)`)
+rango_caudalQn
+
+rango_ns <- range(dataset_turbinas_num$`Velocidad Especifica Ns (rpm)`)
+rango_ns
+
+rango_thomas <- range(dataset_turbinas_num$`Factor Thomas`)
+rango_thomas
+
+
+# Desviacion estandar Dataset Performance
+
+sd_potencia <- sd(dataset_turbinas_num$`Potencia (MW)`)
+sd_potencia
+
+sd_cargaHn <- sd(dataset_turbinas_num$`Carga Hn( m)`)
+sd_cargaHn
+
+sd_caudalQn <- sd(dataset_turbinas_num$`Caudal Qd (m3/s)`)
+sd_caudalQn
+
+sd_ns <- sd(dataset_turbinas_num$`Velocidad Especifica Ns (rpm)`)
+sd_ns
+
+sd_thomas <- sd(dataset_turbinas_num$`Factor Thomas`)
+sd_thomas
+
+# Media Turbinas
+
+mean_potencia <- mean(dataset_turbinas_num$`Potencia (MW)`)
+mean_potencia
+
+mean_cargaHn <- mean(dataset_turbinas_num$`Carga Hn( m)`)
+mean_cargaHn
+
+mean_caudalQn <- mean(dataset_turbinas_num$`Caudal Qd (m3/s)`)
+mean_caudalQn
+
+mean_ns <- mean(dataset_turbinas_num$`Velocidad Especifica Ns (rpm)`)
+mean_ns
+
+mean_thomas <- mean(dataset_turbinas_num$`Factor Thomas`)
+mean_thomas
+
+
+# Varianza
+
+var_potencia <- var(dataset_turbinas_num$`Potencia (MW)`)
+var_potencia
+
+var_cargaHn <- var(dataset_turbinas_num$`Carga Hn( m)`)
+var_cargaHn
+
+var_caudalQn <- var(dataset_turbinas_num$`Caudal Qd (m3/s)`)
+var_caudalQn
+
+var_ns <- var(dataset_turbinas_num$`Velocidad Especifica Ns (rpm)`)
+var_ns
+
+var_thomas <- var(dataset_turbinas_num$`Factor Thomas`)
+var_thomas
+
+#Histogramas
+
+qplot(`Velocidad Especifica Ns (rpm)`, data = Datos_Turbinas_Francis_y_Kaplan, geom = "histogram", fill=`Tipo de Turbina`,bins=30)
+
+hist(Datos_perdidas$`Pérdidas de carga (metros)`, freq = F, col = 'lightblue', main = 'Histograma para Perdidas de Carga en Francis')
+
+hist(dataset_turbinas_num$`Potencia (MW)`, freq = F, col = 'lightblue', main = 'Histograma para Consumo de Recursos')
+curve(dnorm(x,mean_potencia,sd_potencia), add = T)
+
+hist(dataset_turbinas_num$`Velocidad Especifica Ns (rpm)`, freq = F, col = 'lightblue', main = 'Histograma para Consumo de Recursos')
+curve(dnorm(x,mean_ns,sd_ns), add = T)
+
+hist(dataset_turbinas_num$`Factor Thomas`, freq = F, col = 'lightblue', main = 'Histograma para Consumo de Recursos')
+curve(dnorm(x,mean_thomas,sd_thomas), add = T)
+```
+
+Si se observan los histogramas, los datos tienen una normalización, lo que permite que sean útiles para este análisis, aunque existan sesgos a la derecha y a la izquierda, dichos datos, permitirán hacer un análisis estadístico descriptivo y posteriormente una predicción, empleando algún método de la ciencia de datos.
+
+También se analizó la simetría, la kurtosis y la correlación de los datos, como puede apreciarse a continuación:
+
+```{r}
+#SIMETRIA DE LOS DATOS
+
+skew(dataset_turbinas_num$`Velocidad Especifica Ns (rpm)`)
+kurtosi(dataset_turbinas_num$`Velocidad Especifica Ns (rpm)`)
+
+skew(dataset_turbinas_num$`Factor Thomas`)
+kurtosi(dataset_turbinas_num$`Factor Thomas`)
+
+summary(dataset_turbinas_num$`Velocidad Especifica Ns (rpm)`)
+summary(dataset_turbinas_num$`Factor Thomas`)
+
+
+# Correlacion
+
+correlacion <- cor(dataset_turbinas_num)
+correlacion
+corrplot(correlacion)
+
+pairs(dataset_turbinas_num)
+
+#Significancia midiendo Rho Spearman
+
+shapiro.test(dataset_turbinas_num$`Velocidad Especifica Ns (rpm)`) # Para sacar el coeficiente de Rho Spearman 
+shapiro.test(dataset_turbinas_num$`Factor Thomas`) 
+```
+
+
+En este resultado puede observarse que existe una alta correlación entre el Factor Thomas y la Velocidad Específica de las turbinas en estudio, así como una mediana correlación entre la potencia y el caudal de las mismas.
+
+Luego se analizó según los datos experimentales y los datos ideales, como se comportaba el coeficiente de thomas respecto a la velocidad específica de las turbinas, obteniéndose la siguiente gráfica:
+
+```{r}
+# COMPORTAMIENTO DE LA VELOCIDAD ESPECIFICA Y EL COEFICIENTE DE CAVITACION
+qplot(`Velocidad Especifica Ns (rpm)`,`Factor Thomas`,data=Datos_Turbinas_Francis_y_Kaplan,geom=c("point", "line"))
+
+# VALORES DE LA CURVA IDEAL DE CAVITACION
+
+cavitacion_ideal<-data.frame(
+  ns = c(0,100,160,200,240,290,340,370,400),
+  thomas = c(0.025,0.05,0.1,0.125,0.2,0.3,0.4,0.5,0.6)
+)
+View(cavitacion_ideal)
+
+qplot(ns, thomas, data=cavitacion_ideal,geom=c("point", "line"))
+
+# Comparación de las Turbinas con la Cavitación Ideal
+
+plot(dataset_turbinas_num$`Velocidad Especifica Ns (rpm)`, dataset_turbinas_num$`Factor Thomas`, type = "p",
+     col = "lightblue", # Color
+     lwd = 3)           # Ancho de línea
+
+lines(cavitacion_ideal$ns, cavitacion_ideal$thomas, type = "l", col = 2)
+```
+Puede observarse que la velocidad específica y el coeficiente de Thomas indican que estas turbinas operan en el rango de no cavitación si se compara con la cavitación ideal. También puede apreciarse como se comportan estas turbinas con los valores experimentales de la potencia y la carga.
+
+```{r}
+# Potencia y Carga
+
+plot(dataset_turbinas_num$`Potencia (MW)`, dataset_turbinas_num$`Carga Hn( m)`, type = "p",
+     col = "red", # Color
+     lwd = 3)           # Ancho de línea
+
+```   
+
+## Análisis Predictivo
+
+Para observar como puede ser el comportamiento de las turbinas Kaplan y Francis, según los datos de este estudio, se modeló y entrenó un arbol de decisión, el cual permite mediante variables categóricas y no categóricas predecir como puede ser el comportamiento de las turbinas en función de la velocidad específica, su potencia o su carga neta.
+
+Para la elaboración del árbol de decisión, es necesario tomar los datos, para ellos se emplearon tanto las variables cuantitativas como las variables cualitativas, con el objeto de introducir la variable tipo de turbina. A continuación la creación de los datasets:
+
+```{r}
+# PREDICCION CON UN MODELO DE ARBOL DE DECISION
+
+# Obteniendo los datos
+data<-Datos_Turbinas_Francis_y_Kaplan;
+#data<-dbReadTable(con, "ps_order_detail");
+View(data)
+dim(data) #Para comprobar la dimensiÃ³n del data frame (105 filas 5 columnas)
+
+#Obteniendo los datos que nos interesan de la muestra
+
+# Contando la cantidad de registros del dataset
+
+n<- nrow(data)*.8 # 80% de la muestra para en entrenamiento
+muestra <- sample(1:nrow(data),size=n,replace=FALSE) # se toma una muestra aleatoria (80%) de la totalidad
+muestra
+
+train <- data[muestra, ] # Muestra de Entrenamiento (80%)
+View(train)
+test <- data[-muestra, ] # Muestra de Testing (20%)
+View(test)
+
+#Variables necesarias:
+
+Variables<-c(1,2,3,4,5,6,7)               # variables elegidas
+
+#Matriz de Entrenamiento
+Entrenamiento<-train
+View(Entrenamiento)
+
+dim(Entrenamiento)
+
+Entrenamiento  <-Entrenamiento[,Variables]  # tabla entrenamiento
+View(Entrenamiento)
+
+Test<-test [,Variables] # tabla  Testing
+View(Test)
+
+```  
+## Modelado del Árbol
+
+Para el entrenamiento se tomó el 80% de la muestra de acuerdo al modelo de arbol, según las variables a incluir en el estudio, se puede predecir las turbinas Kaplan y Francis en cuanto al factor Thomas y su Velocidad Específica (Ns)
+
+```{r}
+# Creacion del Arbol de Decision:
+dim(Test)
+
+ModeloArbol<-rpart(`Tipo de Turbina` ~ .,data = Entrenamiento, parms=list(split="information"))
+ModeloArbol
+
+# Grafico del Arbol
+rpart.plot(ModeloArbol, box.col=c("lightblue", "green"))
+```
+
+## Predicción
+
+Para la predicción y validación del modelo, se emplea el conjuntode datos de testing, con el objetivo de poder hacer comparaciones y evaluar si el resultado es parte de los valores de Test
+
+```{r}
+# Prediccion de desafiliaciones en la tabla Test
+
+Prediccion <- predict(ModeloArbol, Test, type="class")#,parms=list(split="information"))
+plot(Prediccion, col="lightgreen")
+
+# Datos contenidos en la variable Prediccion
+ 
+Prediccion
+```
+
+```{r}
+#Evolución del Error
+summary(ModeloArbol)
+printcp(ModeloArbol)
+```
+Para observar mejor la evolución del error, se muestra la gráfica de éstos empleando la función plotcp:
+```{r}
+#Gráfica de la Evolución del Error
+plotcp(ModeloArbol)
+```
+
+Ahora para probar el modelo, es necesario analizar la predicción, es recomendable primero graficar el resultado y seguidamente analizar el porcentaje de aciertos de acuerdo a los resultados;.
+
+```{r}
+#Probando la Predicción
+table(Prediccion, Test$`Tipo de Turbina`)
+(sum(Prediccion==Test$`Tipo de Turbina`)/length(Test$`Tipo de Turbina`))*100
+```
+
+En este caso, el porcentaje de confiabilidad de la predicción es del 90%. Ahora bien, si en el modelo de arbol, se cambia la ecuación de modelo agregando de manera explícita el factor thomas, el resultado del modelo y de la predicción varía.
+```{r}
+# Nueva Ecuacion
+ModeloArbol<-rpart(`Tipo de Turbina` ~ `Factor Thomas`,data = Entrenamiento, parms=list(split="information"))
+ModeloArbol
+
+# Grafico del Arbol
+rpart.plot(ModeloArbol, box.col=c("lightblue", "green"))
+
+# Prediccion de desafiliaciones en la tabla Test
+
+Prediccion <- predict(ModeloArbol, Test, type="class")#,parms=list(split="information"))
+plot(Prediccion, col="lightgreen")
+
+# Datos contenidos en la variable Prediccion
+ 
+Prediccion
+
+#Evolución del Error
+summary(ModeloArbol)
+printcp(ModeloArbol)
+
+#Gráfica de la Evolución del Error
+plotcp(ModeloArbol)
+
+#Probando la Predicción
+table(Prediccion, Test$`Tipo de Turbina`)
+(sum(Prediccion==Test$`Tipo de Turbina`)/length(Test$`Tipo de Turbina`))*100
+```
