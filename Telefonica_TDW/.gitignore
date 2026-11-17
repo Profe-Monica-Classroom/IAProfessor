@@ -1,0 +1,6 @@
+.venv/
+__pycache__/
+*.py[cod]
+prepago.db
+prepago.db-shm
+prepago.db-wal
