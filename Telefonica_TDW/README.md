@@ -1,7 +1,7 @@
 # Telefónica Prepago: recargas, monitoreo y reportes
 
-Aplicación de demostración para procesar recargas, consultar un estado de red
-simulado y registrar fallas de acceso a Internet Movistar. Está compuesta por
+Aplicación de demostración académica para procesar recargas, consultar un estado de red
+simulado y registrar fallas de acceso a Internet de operadoras telefónicas. Está compuesta por
 una API FastAPI, una base de datos SQLite y un dashboard Streamlit que se abre
 en un navegador.
 
